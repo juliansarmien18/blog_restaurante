@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ejercicios JavaScript con AJAX</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+        }
+
+        section {
+            margin-bottom: 20px;
+        }
+    </style>
+</head>
+<body>
+
+    <section id="palindrome-section">
+        <h2>Ejercicio 1: Palíndromo</h2>
+        <label for="palindrome-input">Ingrese una cadena:</label>
+        <input type="text" id="palindrome-input">
+        <button onclick="checkPalindrome()">Verificar Palíndromo</button>
+        <p id="palindrome-result"></p>
+    </section>
+    
+    <section id="max-number-section">
+        <h2>Ejercicio 2: Mayor de Dos Números</h2>
+        <label for="num1">Ingrese el primer número:</label>
+        <input type="number" id="num1">
+        <label for="num2">Ingrese el segundo número:</label>
+        <input type="number" id="num2">
+        <button onclick="findMaxNumber()">Encontrar Mayor</button>
+        <p id="max-number-result"></p>
+    </section>
+    
+    <section id="vowels-section">
+        <h2>Ejercicio 3: Vocales en una Frase</h2>
+        <label for="phrase-input">Ingrese una frase:</label>
+        <textarea id="phrase-input" rows="4"></textarea>
+        <button onclick="findVowels()">Encontrar Vocales</button>
+        <p id="vowels-result"></p>
+    </section>
+
+    <!--AJAX -->
+    <section id="ajax-section">
+        <h2>Funcionalidad AJAX</h2>
+        <label for="url-input">URL:</label>
+        <input type="text" id="url-input" value="" placeholder="Ingrese la URL">
+        <button onclick="showContents()">Mostrar Contenidos</button>
+
+        <div id="status"></div>
+        <div id="headers"></div>
+        <div id="status-code"></div>
+    </section>
+    
+    <script>
+        function checkPalindrome() {
+            var input = document.getElementById('palindrome-input').value.toLowerCase();
+            var reversed = input.split('').reverse().join('');
+            var resultElement = document.getElementById('palindrome-result');
+    
+            if (input === reversed) {
+                resultElement.textContent = '¡Es un palíndromo!';
+            } else {
+                resultElement.textContent = 'No es un palíndromo.';
+            }
+        }
+    
+        function findMaxNumber() {
+            var num1 = parseFloat(document.getElementById('num1').value);
+            var num2 = parseFloat(document.getElementById('num2').value);
+            var resultElement = document.getElementById('max-number-result');
+    
+            if (isNaN(num1) || isNaN(num2)) {
+                resultElement.textContent = 'Por favor, ingrese números válidos.';
+            } else {
+                var maxNumber = Math.max(num1, num2);
+                resultElement.textContent = 'El número mayor es: ' + maxNumber;
+            }
+        }
+    
+        function findVowels() {
+            var phrase = document.getElementById('phrase-input').value.toLowerCase();
+            var vowels = phrase.match(/[aeiou]/g);
+            var resultElement = document.getElementById('vowels-result');
+    
+            if (vowels) {
+                resultElement.textContent = 'Las vocales en la frase son: ' + vowels.join(', ');
+            } else {
+                resultElement.textContent = 'No se encontraron vocales en la frase.';
+            }
+        }
+
+    document.addEventListener("DOMContentLoaded", function () {
+        // Al cargar la página, mostrar por defecto la URL de la propia página
+        document.getElementById("url-input").value = window.location.href;
+    });
+
+    function showContents() {
+        var url = document.getElementById('url-input').value;
+        var xhr = new XMLHttpRequest();
+
+        // Manejar los cambios en el estado de la petición
+        xhr.onreadystatechange = function () {
+            handleStateChange(xhr);
+        };
+
+        // Iniciar la petición
+        xhr.open('GET', url, true);
+        xhr.send();
+    }
+
+    function handleStateChange(xhr) {
+        var statusElement = document.getElementById('status');
+        var headersElement = document.getElementById('headers');
+        var statusCodeElement = document.getElementById('status-code');
+
+        // Mostrar el estado de la petición
+        statusElement.textContent = 'Estado de la petición: ' + xhr.readyState;
+
+        // Mostrar las cabeceras HTTP de la respuesta
+        if (xhr.readyState === 2) {
+            headersElement.textContent = 'Cabeceras HTTP de la respuesta:\n' + xhr.getAllResponseHeaders();
+        }
+
+        // Mostrar el código y texto de la respuesta del servidor
+        if (xhr.readyState === 4) {
+            statusCodeElement.textContent = 'Código de estado: ' + xhr.status + ' ' + xhr.statusText;
+            headersElement.textContent = 'Cabeceras HTTP de la respuesta:\n' + xhr.getAllResponseHeaders();
+            statusElement.textContent = 'Estado de la petición: Completada';
+
+            // Mostrar el contenido de la respuesta
+            var responseContent = xhr.responseText;
+            // Puedes hacer algo con el contenido, por ejemplo, mostrarlo en una nueva área
+            console.log(responseContent);
+        }
+    }
+</script>
+
+</body>
+</html>
